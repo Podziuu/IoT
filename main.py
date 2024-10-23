@@ -19,6 +19,18 @@ def detect_thumbs_up(landmarks):
     return False
 
 
+def detect_thumbs_down(landmarks):
+    thumb_tip = landmarks[4]
+    thumb_mcp = landmarks[2]
+    index_tip = landmarks[8]
+    middle_tip = landmarks[12]
+
+    if (thumb_tip.y > thumb_mcp.y and
+            index_tip.y < thumb_tip.y and
+            middle_tip.y < thumb_tip.y):
+        return True
+    return False
+
 cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
@@ -34,12 +46,14 @@ while cap.isOpened():
         for hand_landmarks in result.multi_hand_landmarks:
             if detect_thumbs_up(hand_landmarks.landmark):
                 print("Kciuk w górę!")
+            elif detect_thumbs_down(hand_landmarks.landmark):
+                print("Kciuk w dół!")
             else:
                 print("Inny gest")
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-    cv2.imshow('Thumbs Up Detection', frame)
+    cv2.imshow('Hand Gesture Detection', frame)
 
     if cv2.waitKey(10) & 0xFF == ord('q'):
         break
