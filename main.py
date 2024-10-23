@@ -51,6 +51,8 @@ def detect_open_hand(landmarks):
     return False
 
 
+last_gesture = None
+
 cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
@@ -61,19 +63,25 @@ while cap.isOpened():
 
     image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = hands.process(image)
+    current_gesture = None
 
     if result.multi_hand_landmarks:
         for hand_landmarks in result.multi_hand_landmarks:
             if detect_thumbs_up(hand_landmarks.landmark):
-                print("Kciuk w górę!")
+                current_gesture = "Kciuk w górę!"
             elif detect_thumbs_down(hand_landmarks.landmark):
-                print("Kciuk w dół!")
+                current_gesture = "Kciuk w dół!"
             elif detect_open_hand(hand_landmarks.landmark):
-                print("Otwarta dłoń!")
+                current_gesture = "Otwarta dłoń!"
             else:
-                print("Inny gest")
+                current_gesture = "Inny gest"
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+    if current_gesture != last_gesture:
+        if current_gesture:
+            print(current_gesture)
+        last_gesture = current_gesture
 
     cv2.imshow('Hand Gesture Detection', frame)
 
