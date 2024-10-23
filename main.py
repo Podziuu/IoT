@@ -31,6 +31,26 @@ def detect_thumbs_down(landmarks):
         return True
     return False
 
+
+def detect_open_hand(landmarks):
+    index_tip = landmarks[8]
+    middle_tip = landmarks[12]
+    ring_tip = landmarks[16]
+    pinky_tip = landmarks[20]
+
+    index_mcp = landmarks[5]
+    middle_mcp = landmarks[9]
+    ring_mcp = landmarks[13]
+    pinky_mcp = landmarks[17]
+
+    if (index_tip.y < index_mcp.y and
+            middle_tip.y < middle_mcp.y and
+            ring_tip.y < ring_mcp.y and
+            pinky_tip.y < pinky_mcp.y):
+        return True
+    return False
+
+
 cap = cv2.VideoCapture(0)
 
 while cap.isOpened():
@@ -48,6 +68,8 @@ while cap.isOpened():
                 print("Kciuk w górę!")
             elif detect_thumbs_down(hand_landmarks.landmark):
                 print("Kciuk w dół!")
+            elif detect_open_hand(hand_landmarks.landmark):
+                print("Otwarta dłoń!")
             else:
                 print("Inny gest")
 
